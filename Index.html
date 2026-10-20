@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REKOD PEMBELIAN GAMBAR GRADUASI</title>
+<style>
+:root{--green:#087f5b;--green2:#20c997;--blue:#1769aa;--ink:#183044;--muted:#64748b;--line:#dce9e5;--paper:#f3faf7}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--ink);background:linear-gradient(135deg,#e5fff1 0%,#e9f3ff 55%,#f7fffb 100%);min-height:100vh}
+header{background:linear-gradient(120deg,#087f5b,#12a879 48%,#1769aa);color:#fff;padding:28px 18px 24px;box-shadow:0 8px 24px #0b66552b}
+.hero{max-width:1180px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:18px}.eyebrow{font-size:12px;letter-spacing:2px;font-weight:800;opacity:.88}.hero h1{margin:7px 0;font-size:clamp(23px,4vw,36px);line-height:1.12}.hero p{margin:0;color:#e7fff7;font-size:14px}.hero-icon{font-size:48px;background:#ffffff22;border:1px solid #ffffff55;border-radius:20px;padding:14px}
+main{max-width:1180px;margin:22px auto;padding:0 16px 36px}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-bottom:20px}.stat,.panel{background:#ffffffed;border:1px solid #d7eee4;border-radius:17px;box-shadow:0 8px 24px #1d61410b}.stat{padding:17px 18px}.stat span{font-size:12px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.6px}.stat strong{display:block;font-size:30px;margin-top:5px;color:var(--green)}
+.tabs{display:flex;gap:8px;margin-bottom:15px;background:#ffffffa8;border:1px solid #d8eae5;padding:6px;border-radius:14px;width:max-content;max-width:100%}.tab{border:0;background:transparent;color:#466174;padding:11px 18px;border-radius:10px;font-weight:800;cursor:pointer}.tab.active{background:linear-gradient(110deg,var(--green),var(--blue));color:#fff;box-shadow:0 4px 12px #1769aa30}
+.panel{padding:18px;margin-bottom:16px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:15px}.panel h2{font-size:19px;margin:0}.sub{font-size:13px;color:var(--muted);margin-top:5px}
+.filters{display:grid;grid-template-columns:minmax(160px,220px) minmax(180px,1fr) auto;gap:10px;margin-bottom:14px}select,input{width:100%;padding:11px 12px;border:1px solid #cfe3dc;border-radius:10px;background:#fff;font:inherit;color:var(--ink);outline:none}select:focus,input:focus{border-color:#20a879;box-shadow:0 0 0 3px #20a8791c}.btn{border:0;border-radius:10px;padding:11px 15px;color:white;background:linear-gradient(110deg,var(--green),var(--blue));font-weight:800;cursor:pointer}.btn:disabled{opacity:.55;cursor:wait}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{border-collapse:collapse;width:100%;min-width:650px;background:#fff}th{background:#e8f7ef;color:#155e4b;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.45px;padding:13px 14px;white-space:nowrap}td{padding:13px 14px;border-top:1px solid #eaf1ee;font-size:14px}tbody tr:hover{background:#f6fcf9}.pill{display:inline-block;background:#e4f5ee;color:#087f5b;border:1px solid #c4e9d8;border-radius:99px;padding:5px 9px;font-size:12px;font-weight:800}.empty{text-align:center;padding:35px 15px;color:var(--muted)}.hidden{display:none!important}
+.analysis-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.class-card{border:1px solid #d8eae2;border-radius:14px;padding:16px;background:linear-gradient(145deg,#fff,#f3fbf7)}.class-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:900;font-size:17px;margin-bottom:12px}.total-chip{border-radius:9px;padding:6px 10px;background:#e6f2ff;color:#175b98;font-size:12px}.bar-row{margin:11px 0}.bar-label{display:flex;justify-content:space-between;gap:12px;font-size:13px;margin-bottom:5px}.bar-bg{height:8px;border-radius:20px;background:#e8efed;overflow:hidden}.bar{height:100%;background:linear-gradient(90deg,#20c997,#1769aa);border-radius:20px}.notice{padding:12px 14px;border-radius:11px;background:#edf7ff;color:#245a7d;font-size:13px;line-height:1.5;margin-bottom:14px}.error{background:#fff1f0;color:#a52d2d;border:1px solid #ffd6d2}.footer{text-align:center;color:#6d8290;font-size:12px;padding:14px}
+@media(max-width:650px){.hero-icon{display:none}.stats{gap:8px}.stat{padding:13px}.stat strong{font-size:24px}.stat span{font-size:10px}.filters{grid-template-columns:1fr}.analysis-grid{grid-template-columns:1fr}.panel{padding:13px}main{margin-top:14px}}
+</style>
+</head>
+<body>
+<header><div class="hero"><div><div class="eyebrow">PAPAN PEMANTAUAN SEKOLAH</div><h1>REKOD PEMBELIAN<br>GAMBAR GRADUASI</h1><p>Sistem semakan rekod dan analisis pembelian mengikut kelas</p></div><div class="hero-icon" aria-hidden="true">🎓</div></div></header>
+<main>
+  <section class="stats">
+    <div class="stat"><span>Jumlah rekod murid</span><strong id="totalStudents">—</strong></div>
+    <div class="stat"><span>Bilangan kelas</span><strong id="totalClasses">—</strong></div>
+    <div class="stat"><span>Jenis pembelian</span><strong id="totalTypes">—</strong></div>
+  </section>
+  <div class="tabs" role="tablist"><button class="tab active" id="tabRecords" role="tab" aria-selected="true">📋 Rekod</button><button class="tab" id="tabAnalysis" role="tab" aria-selected="false">📊 Analisis</button></div>
+  <section id="recordsView" class="panel">
+    <div class="panel-head"><div><h2>Rekod pembelian murid</h2><div class="sub">Tapis mengikut kelas atau cari nama murid.</div></div><button class="btn" id="refreshBtn">↻ Muat semula</button></div>
+    <div class="filters"><select id="classFilter" aria-label="Tapis kelas"><option value="">Semua kelas</option></select><input id="searchInput" type="search" placeholder="Cari nama murid atau jenis gambar..." aria-label="Cari rekod"><button class="btn" id="csvBtn">Eksport CSV</button></div>
+    <div id="status" class="notice">Sedang menyambung ke Google Sheets…</div>
+    <div class="table-wrap"><table><thead><tr><th>Bil.</th><th>Nama murid</th><th>Kelas</th><th>Jenis pembelian gambar</th></tr></thead><tbody id="recordsBody"><tr><td colspan="4" class="empty">Memuatkan data…</td></tr></tbody></table></div>
+    <div class="sub" id="recordCount" style="margin-top:10px">0 rekod dipaparkan</div>
+  </section>
+  <section id="analysisView" class="panel hidden">
+    <div class="panel-head"><div><h2>Analisis mengikut kelas</h2><div class="sub">Jumlah murid dan pecahan setiap jenis pembelian gambar.</div></div><button class="btn" id="analysisCsvBtn">Eksport analisis</button></div>
+    <div id="analysisStatus" class="notice">Analisis akan dipaparkan selepas data berjaya dimuatkan.</div>
+    <div id="analysisGrid" class="analysis-grid"></div>
+  </section>
+  <div class="footer">REKOD PEMBELIAN GAMBAR GRADUASI · Data dibaca terus daripada Google Sheets</div>
+</main>
+<script>
+/*
+PENTING:
+1. Pastikan Google Sheet dikongsi sebagai "Sesiapa yang mempunyai pautan — Pembaca",
+   atau terbitkan tab respons melalui Fail > Kongsi > Terbitkan ke web.
+2. Jika nama tab respons bukan tab pertama, ubah SHEET_GID di bawah kepada gid tab tersebut.
+3. Susunan lajur dikenal pasti berdasarkan nama pengepala, jadi lajur cap masa tambahan boleh wujud.
+*/
+const SHEET_ID = "1s7bhAJdPVFaBt44gy4JZzlvDQMv1NIkC7PrPwfzmQ_M";
+const SHEET_GID = "0"; // Tukar kepada gid tab respons jika perlu
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${SHEET_GID}&tqx=out:json`;
+let allRecords = [];
+let lastLoadError = "";
+const $ = id => document.getElementById(id);
+function norm(s){return String(s??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();}
+function cellText(cell){if(!cell)return ""; if(cell.f!=null)return String(cell.f).trim(); if(cell.v==null)return ""; return String(cell.v).trim();}
+function setStatus(message,isError=false){$("status").textContent=message;$("status").classList.toggle("error",isError);}
+function parseGViz(text){
+  const start=text.indexOf("{"), end=text.lastIndexOf("}");
+  if(start<0||end<0)throw new Error("Format data Google Sheets tidak dikenali.");
+  const payload=JSON.parse(text.slice(start,end+1));
+  if(payload.status==="error")throw new Error(payload.errors?.[0]?.detailed_message||"Google Sheets memulangkan ralat.");
+  const table=payload.table, headers=table.cols.map(c=>String(c.label||c.id||"").trim());
+  const findCol=(needles)=>headers.findIndex(h=>needles.some(n=>norm(h).includes(norm(n))));
+  let nameCol=findCol(["TULIS NAMA MURID","Nama penuh","Nama murid"]);
+  let classCol=findCol(["KELAS"]);
+  let typeCol=findCol(["PILIH JENIS GAMBAR","Jenis gambar"]);
+  // "PILIH NAMA" ialah lajur pilihan nama jika borang turut mengumpulkannya.
+  let chooseNameCol=findCol(["PILIH NAMA"]);
+  if(nameCol<0 && chooseNameCol>=0)nameCol=chooseNameCol;
+  if(nameCol<0||classCol<0||typeCol<0){
+    throw new Error("Pengepala lajur tidak sepadan. Pastikan terdapat lajur PILIH NAMA, KELAS, TULIS NAMA MURID (Nama penuh) dan PILIH JENIS GAMBAR.");
+  }
+  return table.rows.map(r=>({name:cellText(r.c[nameCol]),className:cellText(r.c[classCol]),type:cellText(r.c[typeCol])}))
+    .filter(r=>r.name||r.className||r.type)
+    .map(r=>({name:r.name||"Tidak dinyatakan",className:r.className||"Tiada kelas",type:r.type||"Belum dinyatakan"}));
+}
+async function loadData(){
+  $("refreshBtn").disabled=true; setStatus("Sedang menyambung ke Google Sheets…");
+  try{
+    const url=SHEET_URL+"&_="+Date.now();
+    const response=await fetch(url,{cache:"no-store"});
+    if(!response.ok)throw new Error("Tidak dapat membaca Google Sheets (HTTP "+response.status+").");
+    allRecords=parseGViz(await response.text());
+    if(!allRecords.length)setStatus("Sambungan berjaya, tetapi belum ada rekod murid.");
+    else setStatus(`Data berjaya dimuatkan: ${allRecords.length} rekod murid.`);
+    lastLoadError="";
+    populateClassFilter(); updateStats(); renderRecords(); renderAnalysis();
+  }catch(err){
+    lastLoadError=err.message||"Ralat tidak diketahui.";
+    setStatus("Data belum dapat dibaca. "+lastLoadError+" Pastikan helaian boleh dibaca melalui pautan dan SHEET_GID betul.",true);
+    $("recordsBody").innerHTML='<tr><td colspan="4" class="empty">Tiada data dipaparkan. Semak tetapan perkongsian Google Sheets.</td></tr>';
+    $("analysisStatus").textContent="Analisis belum tersedia kerana data tidak berjaya dimuatkan.";
+    $("analysisGrid").innerHTML="";
+    $("totalStudents").textContent="—";$("totalClasses").textContent="—";$("totalTypes").textContent="—";
+  }finally{$("refreshBtn").disabled=false;}
+}
+function populateClassFilter(){
+  const select=$("classFilter"),old=select.value;
+  const classes=[...new Set(allRecords.map(r=>r.className).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"ms",{numeric:true}));
+  select.innerHTML='<option value="">Semua kelas</option>'+classes.map(c=>`<option value="${escapeAttr(c)}">${escapeHtml(c)}</option>`).join("");
+  if(classes.includes(old))select.value=old;
+}
+function updateStats(){
+  $("totalStudents").textContent=allRecords.length.toLocaleString("ms-MY");
+  $("totalClasses").textContent=new Set(allRecords.map(r=>r.className)).size.toLocaleString("ms-MY");
+  $("totalTypes").textContent=new Set(allRecords.map(r=>r.type).filter(t=>t&&t!=="Belum dinyatakan")).size.toLocaleString("ms-MY");
+}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function escapeAttr(s){return escapeHtml(s);}
+function filteredRecords(){
+  const cls=$("classFilter").value, query=norm($("searchInput").value);
+  return allRecords.filter(r=>(!cls||r.className===cls)&&(!query||norm([r.name,r.className,r.type].join(" ")).includes(query)))
+    .sort((a,b)=>a.className.localeCompare(b.className,"ms",{numeric:true})||a.name.localeCompare(b.name,"ms"));
+}
+function renderRecords(){
+  const rows=filteredRecords(), body=$("recordsBody");
+  if(!rows.length){body.innerHTML='<tr><td colspan="4" class="empty">Tiada rekod sepadan dengan tapisan ini.</td></tr>';}
+  else body.innerHTML=rows.map((r,i)=>`<tr><td>${i+1}</td><td><strong>${escapeHtml(r.name)}</strong></td><td>${escapeHtml(r.className)}</td><td><span class="pill">${escapeHtml(r.type)}</span></td></tr>`).join("");
+  $("recordCount").textContent=`${rows.length} daripada ${allRecords.length} rekod dipaparkan`;
+}
+function renderAnalysis(){
+  const grid=$("analysisGrid");
+  if(!allRecords.length){grid.innerHTML="";return;}
+  const classes=[...new Set(allRecords.map(r=>r.className))].sort((a,b)=>a.localeCompare(b,"ms",{numeric:true}));
+  const typeNames=[...new Set(allRecords.map(r=>r.type))].sort((a,b)=>a.localeCompare(b,"ms"));
+  $("analysisStatus").textContent=`Analisis keseluruhan: ${allRecords.length} rekod daripada ${classes.length} kelas. Bilangan dikira berdasarkan setiap baris respons dalam helaian.`;
+  grid.innerHTML=classes.map(cls=>{
+    const records=allRecords.filter(r=>r.className===cls);
+    const counts=typeNames.map(type=>({type,count:records.filter(r=>r.type===type).length})).filter(x=>x.count>0).sort((a,b)=>b.count-a.count);
+    return `<div class="class-card"><div class="class-title"><span>${escapeHtml(cls)}</span><span class="total-chip">${records.length} murid</span></div>
+    ${counts.map(x=>`<div class="bar-row"><div class="bar-label"><span>${escapeHtml(x.type)}</span><strong>${x.count}</strong></div><div class="bar-bg"><div class="bar" style="width:${Math.max(3,x.count/records.length*100)}%"></div></div></div>`).join("")}
+    </div>`;
+  }).join("");
+}
+function downloadCsv(filename,rows){
+  const csv=rows.map(row=>row.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8;"});
+  const link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download=filename;document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(link.href);
+}
+function exportRecords(){downloadCsv("rekod-pembelian-gambar-graduasi.csv",[["Nama murid","Kelas","Jenis pembelian gambar"],...filteredRecords().map(r=>[r.name,r.className,r.type])]);}
+function exportAnalysis(){
+  const rows=[["Kelas","Jenis pembelian gambar","Bilangan murid"]];
+  [...new Set(allRecords.map(r=>r.className))].sort((a,b)=>a.localeCompare(b,"ms",{numeric:true})).forEach(cls=>{
+    [...new Set(allRecords.map(r=>r.type))].sort((a,b)=>a.localeCompare(b,"ms")).forEach(type=>{
+      const n=allRecords.filter(r=>r.className===cls&&r.type===type).length;if(n)rows.push([cls,type,n]);
+    });
+  });downloadCsv("analisis-pembelian-gambar-graduasi.csv",rows);
+}
+$("tabRecords").addEventListener("click",()=>{ $("recordsView").classList.remove("hidden");$("analysisView").classList.add("hidden");$("tabRecords").classList.add("active");$("tabAnalysis").classList.remove("active");$("tabRecords").setAttribute("aria-selected","true");$("tabAnalysis").setAttribute("aria-selected","false");});
+$("tabAnalysis").addEventListener("click",()=>{ $("analysisView").classList.remove("hidden");$("recordsView").classList.add("hidden");$("tabAnalysis").classList.add("active");$("tabRecords").classList.remove("active");$("tabAnalysis").setAttribute("aria-selected","true");$("tabRecords").setAttribute("aria-selected","false");});
+$("classFilter").addEventListener("change",renderRecords);$("searchInput").addEventListener("input",renderRecords);$("refreshBtn").addEventListener("click",loadData);$("csvBtn").addEventListener("click",exportRecords);$("analysisCsvBtn").addEventListener("click",exportAnalysis);
+loadData();
+</script>
+</body>
+</html>
