@@ -27,6 +27,12 @@ main{max-width:1180px;margin:22px auto;padding:0 16px 36px}.stats{display:grid;g
     <div class="stat"><span>Jenis pembelian</span><strong id="totalTypes">—</strong></div>
   </section>
   <div class="tabs" role="tablist"><button class="tab active" id="tabRecords" role="tab" aria-selected="true">📋 Rekod</button><button class="tab" id="tabAnalysis" role="tab" aria-selected="false">📊 Analisis Kelas</button><button class="tab" id="tabOrders" role="tab" aria-selected="false">🧾 Analisis Tempahan</button></div>
+  <section id="adminView" class="panel hidden">
+    <div class="panel-head"><div><h2>Admin — Rekod bertindih</h2><div class="sub">Nama dan kelas dibandingkan tanpa mengira huruf besar/kecil serta ruang berlebihan.</div></div><button class="btn hidden" id="adminLogout">Log keluar</button></div>
+    <form id="adminLogin"><label for="adminPassword">Kata laluan Admin</label><div class="filters" style="margin-top:10px"><input id="adminPassword" type="password" autocomplete="current-password" required placeholder="Masukkan kata laluan"><button class="btn" id="adminLoginBtn" type="submit">Log masuk</button></div></form>
+    <div id="adminStatus" class="notice" role="status" aria-live="polite">Log masuk untuk melihat rekod bertindih.</div>
+    <div id="adminContent" class="hidden"><button class="btn" id="adminRefresh" style="margin-bottom:14px">Muat semula rekod bertindih</button><div class="table-wrap"><table><thead><tr><th>Kumpulan</th><th>Nama murid</th><th>Kelas</th><th>Jenis pembelian</th><th>Bilangan rekod sama</th></tr></thead><tbody id="duplicatesBody"></tbody></table></div></div>
+  </section>
   <section id="recordsView" class="panel">
     <div class="panel-head"><div><h2>Rekod pembelian murid</h2><div class="sub">Tapis mengikut kelas atau cari nama murid.</div></div><button class="btn" id="refreshBtn">↻ Muat semula</button></div>
     <div class="filters"><select id="classFilter" aria-label="Tapis kelas"><option value="">Semua kelas</option></select><input id="searchInput" type="search" placeholder="Cari nama murid atau jenis gambar..." aria-label="Cari rekod"><button class="btn" id="csvBtn">Eksport CSV</button></div>
@@ -56,6 +62,7 @@ PENTING:
 */
 const SHEET_ID = "1s7bhAJdPVFaBt44gy4JZzlvDQMv1NIkC7PrPwfzmQ_M";
 const SHEET_GID = "0"; // Tukar kepada gid tab respons jika perlu
+let adminUnlocked = false;
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${SHEET_GID}&tqx=out:json`;
 let allRecords = [];
 let lastLoadError = "";
@@ -110,9 +117,10 @@ async function loadData(){
     if(!allRecords.length)setStatus("Sambungan berjaya, tetapi belum ada rekod murid.");
     else setStatus(`Data berjaya dimuatkan: ${allRecords.length} rekod murid.`);
     lastLoadError="";
-    populateClassFilter(); updateStats(); renderRecords(); renderAnalysis(); renderOrders();
+    populateClassFilter(); updateStats(); renderRecords(); renderAnalysis(); renderOrders(); renderDuplicates();
   }catch(err){
     allRecords=[];
+    renderDuplicates();
     lastLoadError=err.message||"Ralat tidak diketahui.";
     setStatus("Data belum dapat dibaca. "+lastLoadError+" Pastikan helaian boleh dibaca melalui pautan dan SHEET_GID betul.",true);
     $("recordsBody").innerHTML='<tr><td colspan="4" class="empty">Tiada data dipaparkan. Semak tetapan perkongsian Google Sheets.</td></tr>';
@@ -120,6 +128,7 @@ async function loadData(){
     $("analysisGrid").innerHTML="";
     $("ordersStatus").textContent="Analisis tempahan belum tersedia kerana data tidak berjaya dimuatkan.";
     $("ordersBody").innerHTML="";$("ordersCount").textContent="—";$("ordersTotal").textContent="—";
+    renderDuplicates();
     $("totalStudents").textContent="—";$("totalClasses").textContent="—";$("totalTypes").textContent="—";
   }finally{$("refreshBtn").disabled=false;}
 }
@@ -190,7 +199,29 @@ function exportAnalysis(){
     });
   });downloadCsv("analisis-pembelian-gambar-graduasi.csv",rows);
 }
-const views=[["tabRecords","recordsView"],["tabAnalysis","analysisView"],["tabOrders","ordersView"]];
+function duplicateKey(record){return JSON.stringify([record.className,record.name].map(value=>String(value??"").normalize("NFC").trim().replace(/\s+/g," ").toLocaleLowerCase("ms-MY")));}
+function duplicateGroups(records){
+  const groups=new Map();
+  records.filter(r=>r.name.trim()&&r.className.trim()).forEach(r=>{const key=duplicateKey(r);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(r);});
+  return [...groups.values()].filter(group=>group.length>1).sort((a,b)=>a[0].className.localeCompare(b[0].className,"ms",{numeric:true})||a[0].name.localeCompare(b[0].name,"ms"));
+}
+function adminStatus(message,error=false){$("adminStatus").textContent=message;$("adminStatus").classList.toggle("error",error);}
+function renderDuplicates(){
+  if(!adminUnlocked)return;
+  const groups=duplicateGroups(allRecords);
+  $("duplicatesBody").innerHTML=groups.length?groups.map((group,i)=>group.map(r=>`<tr><td>${i+1}</td><td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.className)}</td><td>${escapeHtml(r.type)}</td><td>${group.length}</td></tr>`).join("")).join(""):'<tr><td colspan="5" class="empty">'+(lastLoadError?'Data belum tersedia. Sila muat semula.':'Tiada rekod bertindih.')+'</td></tr>';
+  const records=groups.reduce((sum,group)=>sum+group.length,0);
+  adminStatus(lastLoadError?"Data belum dapat dibaca. Sila muat semula.":`${groups.length} kumpulan nama bertindih melibatkan ${records} rekod. Setiap baris di bawah ialah satu rekod pembelian.`,Boolean(lastLoadError));
+}
+$("adminLogin").addEventListener("submit",event=>{
+  event.preventDefault();
+  if($("adminPassword").value!=="sksj"){adminStatus("Kata laluan tidak betul.",true);$("adminPassword").value="";$("adminPassword").focus();return;}
+  adminUnlocked=true;$("adminPassword").value="";$("adminLogin").classList.add("hidden");$("adminContent").classList.remove("hidden");$("adminLogout").classList.remove("hidden");renderDuplicates();
+});
+$("adminLogout").addEventListener("click",()=>{adminUnlocked=false;$("adminContent").classList.add("hidden");$("adminLogout").classList.add("hidden");$("adminLogin").classList.remove("hidden");$("duplicatesBody").innerHTML="";adminStatus("Anda telah log keluar.");});
+$("adminRefresh").addEventListener("click",async()=>{$("adminRefresh").disabled=true;adminStatus("Sedang memuatkan data?");try{await loadData();}finally{$("adminRefresh").disabled=false;}});
+const adminTab=document.createElement("button");adminTab.id="tabAdmin";adminTab.className="tab";adminTab.setAttribute("role","tab");adminTab.setAttribute("aria-selected","false");adminTab.textContent="Admin";document.querySelector(".tabs").appendChild(adminTab);
+const views=[["tabRecords","recordsView"],["tabAnalysis","analysisView"],["tabOrders","ordersView"],["tabAdmin","adminView"]];
 views.forEach(([tabId])=>$(tabId).addEventListener("click",()=>{
   views.forEach(([id,viewId])=>{
     const active=id===tabId;
