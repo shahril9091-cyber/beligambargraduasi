@@ -28,7 +28,7 @@ main{max-width:1180px;margin:22px auto;padding:0 16px 36px}.stats{display:grid;g
   </section>
   <div class="tabs" role="tablist"><button class="tab active" id="tabRecords" role="tab" aria-selected="true">📋 Rekod</button><button class="tab" id="tabAnalysis" role="tab" aria-selected="false">📊 Analisis Kelas</button><button class="tab" id="tabOrders" role="tab" aria-selected="false">🧾 Analisis Tempahan</button></div>
   <section id="adminView" class="panel hidden">
-    <div class="panel-head"><div><h2>Admin — Rekod bertindih</h2><div class="sub">Nama dan kelas dibandingkan tanpa mengira huruf besar/kecil serta ruang berlebihan.</div></div><button class="btn hidden" id="adminLogout">Log keluar</button></div>
+    <div class="panel-head"><div><h2>Admin — Rekod bertindih</h2><div class="sub">Rekod bertindih mesti mempunyai nama, kelas dan jenis pembelian yang sama. Huruf besar/kecil serta ruang berlebihan diabaikan. Pesanan jenis berlainan bagi murid yang sama adalah sah.</div></div><button class="btn hidden" id="adminLogout">Log keluar</button></div>
     <form id="adminLogin"><label for="adminPassword">Kata laluan Admin</label><div class="filters" style="margin-top:10px"><input id="adminPassword" type="password" autocomplete="current-password" required placeholder="Masukkan kata laluan"><button class="btn" id="adminLoginBtn" type="submit">Log masuk</button></div></form>
     <div id="adminStatus" class="notice" role="status" aria-live="polite">Log masuk untuk melihat rekod bertindih.</div>
     <div id="adminContent" class="hidden"><button class="btn" id="adminRefresh" style="margin-bottom:14px">Muat semula rekod bertindih</button><div class="table-wrap"><table><thead><tr><th>Kumpulan</th><th>Nama murid</th><th>Kelas</th><th>Jenis pembelian</th><th>Bilangan rekod sama</th></tr></thead><tbody id="duplicatesBody"></tbody></table></div></div>
@@ -199,7 +199,7 @@ function exportAnalysis(){
     });
   });downloadCsv("analisis-pembelian-gambar-graduasi.csv",rows);
 }
-function duplicateKey(record){return JSON.stringify([record.className,record.name].map(value=>String(value??"").normalize("NFC").trim().replace(/\s+/g," ").toLocaleLowerCase("ms-MY")));}
+function duplicateKey(record){return JSON.stringify([record.className,record.name,canonicalType(record.type)].map(value=>String(value??"").normalize("NFC").trim().replace(/\s+/g," ").toLocaleLowerCase("ms-MY")));}
 function duplicateGroups(records){
   const groups=new Map();
   records.filter(r=>r.name.trim()&&r.className.trim()).forEach(r=>{const key=duplicateKey(r);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(r);});
@@ -211,7 +211,7 @@ function renderDuplicates(){
   const groups=duplicateGroups(allRecords);
   $("duplicatesBody").innerHTML=groups.length?groups.map((group,i)=>group.map(r=>`<tr><td>${i+1}</td><td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.className)}</td><td>${escapeHtml(r.type)}</td><td>${group.length}</td></tr>`).join("")).join(""):'<tr><td colspan="5" class="empty">'+(lastLoadError?'Data belum tersedia. Sila muat semula.':'Tiada rekod bertindih.')+'</td></tr>';
   const records=groups.reduce((sum,group)=>sum+group.length,0);
-  adminStatus(lastLoadError?"Data belum dapat dibaca. Sila muat semula.":`${groups.length} kumpulan nama bertindih melibatkan ${records} rekod. Setiap baris di bawah ialah satu rekod pembelian.`,Boolean(lastLoadError));
+  adminStatus(lastLoadError?"Data belum dapat dibaca. Sila muat semula.":`${groups.length} kumpulan pembelian bertindih melibatkan ${records} rekod. Nama, kelas dan jenis pembelian sama dalam setiap kumpulan.`,Boolean(lastLoadError));
 }
 $("adminLogin").addEventListener("submit",event=>{
   event.preventDefault();
