@@ -69,6 +69,19 @@ button:focus-visible{outline:3px solid #1769aa;outline-offset:3px}
   .footer{padding:14px 4px;line-height:1.6}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+/* Keep pupil records in a conventional table on phones. */
+@media(max-width:700px){
+  #recordsView .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;-webkit-overflow-scrolling:touch}
+  #recordsView table{display:table;min-width:650px;background:#fff}
+  #recordsView thead{position:static;display:table-header-group;width:auto;height:auto;padding:0;margin:0;overflow:visible;clip:auto;white-space:normal}
+  #recordsView tbody{display:table-row-group;width:auto}
+  #recordsView tbody tr{display:table-row;margin:0;padding:0;border:0;border-radius:0;background:#fff}
+  #recordsView tbody tr:hover{background:#f6fcf9}
+  #recordsView td{display:table-cell;padding:13px 14px;border-top:1px solid #eaf1ee;overflow-wrap:normal}
+  #recordsView td::before{content:none!important}
+  #recordsView td.empty{display:table-cell;padding:35px 15px}
+}
 </style>
 </head>
 <body>
